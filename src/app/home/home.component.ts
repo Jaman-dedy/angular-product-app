@@ -13,22 +13,46 @@ import { CommonModule } from '@angular/common';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
-  constructor(private productsService: ProductsService) {}
+  constructor(private productsService: ProductsService) { }
 
-  products: Product[]= []
+  products: Product[] = []
   totalRecords: number = 0;
-  rows:number = 5
-  onPageChange(event:any) {
+  rows: number = 5
+  onPageChange(event: any) {
     this.fetchProducts(event.page, event.perPage)
   }
 
-  fetchProducts(page: number, perPage: number){
+  fetchProducts(page: number, perPage: number) {
     this.productsService
-      .getProducts('http://localhost:3000/clothes', { page, perPage})
-      .subscribe((products: Products) => {
-        this.products = products.items;
-        this.totalRecords = products.total;
+      .getProducts('http://localhost:3000/clothes', { page, perPage })
+      .subscribe({
+        next: (data: Products) => {
+          this.products = data.items;
+          this.totalRecords = data.total;
+        },
+        error: (error) => {
+          console.log('error :>> ', error);
+        }
       });
+  }
+
+  editProduct(product: Product, id: number) {
+    this.productsService.editProduct(`http://localhost:3000/clothes/${id}`, product).subscribe(
+      {
+        next: (data) => {
+
+        },
+        error: (error) => {
+
+        }
+      }
+    )
+  }
+  deleteProduct(product: Product) {
+
+  }
+  addProduct(product: Product) {
+
   }
 
   ngOnInit() {
