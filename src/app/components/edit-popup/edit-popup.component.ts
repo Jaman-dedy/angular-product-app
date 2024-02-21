@@ -4,7 +4,7 @@ import { DialogModule } from 'primeng/dialog';
 import { RatingModule } from 'primeng/rating';
 import { Product } from '../../../type';
 import { ButtonModule } from 'primeng/button';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-edit-popup',
@@ -21,23 +21,51 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   styleUrl: './edit-popup.component.scss',
 })
 export class EditPopupComponent {
+  constructor(private formBuilder: FormBuilder) { }
+
   @Input() display: boolean = false;
   @Output() displayChange = new EventEmitter<boolean>();
   @Input() header!: string;
 
   @Input() product: Product = {
-    id: 0,
     name: '',
     image: '',
     price: '',
     rating: 0,
   };
 
+  specialCharacterValidator(): ValidatorFn {
+    return (control) => {
+      const hasSpecialCharacter = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(
+        control.value
+      );
+
+      return hasSpecialCharacter ? { hasSpecialCharacter: true } : null;
+    };
+  }
+
+  productForm = this.formBuilder.group({
+    name: ['', [Validators.required, this.specialCharacterValidator()]],
+    image: [''],
+    price: ['', [Validators.required]],
+    rating: [0],
+  })
+
+  ngOnChanges() {
+    this.productForm.patchValue(this.product)
+  }
+
   @Output() confirm = new EventEmitter<Product>();
   @Output() cancel = new EventEmitter<void>();
 
   onConfirm() {
-    this.confirm.emit(this.product);
+    const { name, image, price, rating } = this.productForm.value;
+    this.confirm.emit({
+      name: name || '',
+      image: image || '',
+      price: price || '',
+      rating: rating || 0,
+    });
     this.display = false
     this.displayChange.emit(this.display)
   }
