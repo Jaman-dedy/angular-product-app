@@ -1,18 +1,33 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { RatingModule } from 'primeng/rating';
 import { ButtonModule } from 'primeng/button';
 import { Product } from '../../../type';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { PricePipe } from '../../pipes/price.pipe';
+import { TruncateNamePipe } from '../../pipes/truncate-name.pipe';
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [RatingModule, FormsModule, ButtonModule, ConfirmPopupModule],
+  imports: [
+    RatingModule,
+    FormsModule,
+    ButtonModule,
+    ConfirmPopupModule,
+    PricePipe,
+    TruncateNamePipe,
+  ],
   providers: [ConfirmationService],
   templateUrl: './product.component.html',
-  styleUrl: './product.component.scss'
+  styleUrl: './product.component.scss',
 })
 export class ProductComponent {
   constructor(private confirmationService: ConfirmationService) { }
@@ -24,7 +39,7 @@ export class ProductComponent {
   @Output() delete: EventEmitter<Product> = new EventEmitter<Product>();
 
   editProduct() {
-    this.edit.emit(this.product)
+    this.edit.emit(this.product);
   }
 
   confirmDelete() {
@@ -33,10 +48,10 @@ export class ProductComponent {
       message: 'Are you sure you want to delete this product ?',
       accept: () => {
         this.deleteProduct();
-      }
-    })
+      },
+    });
   }
   deleteProduct() {
-    this.delete.emit(this.product)
+    this.delete.emit(this.product);
   }
 }
