@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { PaginatorModule } from 'primeng/paginator';
+import { Component, ViewChild } from '@angular/core';
+import { Paginator, PaginatorModule } from 'primeng/paginator';
 import { ButtonModule } from 'primeng/button';
 import { ProductsService } from '../services/products.service';
 import { Product, Products } from '../../type';
@@ -23,11 +23,17 @@ import { EditPopupComponent } from '../components/edit-popup/edit-popup.componen
 export class HomeComponent {
   constructor(private productsService: ProductsService) { }
 
+  @ViewChild('paginator') paginator: Paginator | undefined
+
   products: Product[] = [];
   totalRecords: number = 0;
   rows: number = 5;
   onPageChange(event: any) {
     this.fetchProducts(event.page, event.perPage);
+  }
+
+  resetPaginator() {
+    this.paginator?.changePage(0)
   }
 
   displayEditPopup: boolean = false;
@@ -38,7 +44,12 @@ export class HomeComponent {
     this.displayEditPopup = true;
   }
 
-  toggleDeletePopup(product: Product) { }
+  toggleDeletePopup(product: Product) {
+    if (!product.id) {
+      return
+    }
+    this.deleteProduct(product.id)
+  }
 
   toggleAddPopup() {
     this.displayAddPopup = true;
@@ -86,6 +97,7 @@ export class HomeComponent {
       .subscribe({
         next: (data) => {
           this.fetchProducts(0, this.rows);
+          this.resetPaginator()
         },
         error: (error) => { },
       });
@@ -96,16 +108,18 @@ export class HomeComponent {
       .subscribe({
         next: (data) => {
           this.fetchProducts(0, this.rows);
+          this.resetPaginator()
         },
         error: (error) => { },
       });
   }
   addProduct(product: Product) {
     this.productsService
-      .editProduct(`http://localhost:3000/clothes/`, product)
+      .addProduct(`http://localhost:3000/clothes/`, product)
       .subscribe({
         next: (data) => {
           this.fetchProducts(0, this.rows);
+          this.resetPaginator()
         },
         error: (error) => { },
       });
