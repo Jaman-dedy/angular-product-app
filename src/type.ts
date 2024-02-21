@@ -18,14 +18,15 @@ export interface Options {
 }
 
 export interface Products {
-   items: Product[];
-   total: number;
-   page: number;
-   perPage: number;
-   totalPage: number;
+    items: Product[];
+    total: number;
+    page: number;
+    perPage: number;
+    totalPage: number;
 }
 
 export interface Product {
+    id?: number;
     price: string;
     name: string;
     image: string;
@@ -33,7 +34,7 @@ export interface Product {
 }
 
 export interface PaginationParams {
-    [param: string] : string | number | boolean | ReadonlyArray<string | number | boolean>;
+    [param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>;
     page: number;
     perPage: number;
 }
